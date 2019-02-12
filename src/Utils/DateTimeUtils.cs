@@ -11,7 +11,12 @@ namespace Microsoft.SyndicationFeed
 
         public static bool TryParseDate(string value, out DateTimeOffset result)
         {
-            if(TryParseDateRfc3339(value, out result))
+            if (TryParseAustralianDate(value, out result))
+            {
+                return true;
+            }
+
+            if (TryParseDateRfc3339(value, out result))
             {
                 return true;
             }
@@ -39,6 +44,17 @@ namespace Microsoft.SyndicationFeed
         public static string ToRfc1123String(DateTimeOffset dto)
         {
             return dto.ToString("r");
+        }
+
+        private static bool TryParseAustralianDate(string value, out DateTimeOffset result)
+        {
+            if (DateTimeOffset.TryParseExact(value, "dd/MM/yyyy", CultureInfo.InvariantCulture.DateTimeFormat,
+                DateTimeStyles.None, out result))
+            {
+                return true;
+            }
+
+            return false;
         }
 
         private static bool TryParseDateRssSpec(string value, out DateTimeOffset result)
